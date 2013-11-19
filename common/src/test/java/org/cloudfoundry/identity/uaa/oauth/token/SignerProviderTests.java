@@ -17,9 +17,9 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author Joel D'sa
- * 
+ *
  */
 public class SignerProviderTests {
 

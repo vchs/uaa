@@ -67,4 +67,37 @@
 		<constructor-arg ref="jdbcTemplate"/>
 		<constructor-arg ref="limitSqlAdapter"/>
 	</bean>
-</beans>
+
+	<jdbc:initialize-database ignore-failures="ALL" data-source="dataSource">
+		<jdbc:script location="classpath*:org/cloudfoundry/identity/uaa/schema-#{@scripts}.sql" />
+		<jdbc:script location="classpath*:org/cloudfoundry/identity/uaa/scim/schema-#{@scripts}.sql" />
+	</jdbc:initialize-database>
+    
+    <beans profile="postgresql-eclipse">
+      <jdbc:initialize-database ignore-failures="ALL" data-source="dataSource">
+          <jdbc:script location="classpath*:org/cloudfoundry/identity/uaa/scim/schema-drop-postgresql.sql" />
+          <jdbc:script location="classpath*:org/cloudfoundry/identity/uaa/schema-postgresql-drop-cloudfoundry.sql" />
+          <jdbc:script location="classpath*:org/cloudfoundry/identity/uaa/schema-#{@scripts}.sql" />
+          <jdbc:script location="classpath*:org/cloudfoundry/identity/uaa/scim/schema-#{@scripts}.sql" />
+      </jdbc:initialize-database>
+    </beans>
+	
+	<beans profile="ldap">
+
+       <bean id="contextSource" class="org.springframework.ldap.core.support.LdapContextSource">
+          <property name="url" value="${ldap.url}" />
+          <property name="base" value="${ldap.baseDN}" />
+          <property name="userDn" value="${ldap.userDN}" />
+          <property name="password" value="${ldap.userPassword}" />
+          <property name="baseEnvironmentProperties">
+            <map>
+                <entry key="com.sun.jndi.ldap.connect.timeout" value="${ldap.server_connection_timeout_msec:10000}" />
+            </map>
+           </property>
+       </bean>
+    
+       <bean id="ldapTemplate" class="org.springframework.ldap.core.LdapTemplate">
+          <constructor-arg ref="contextSource" />
+       </bean>
+       
+    </beans>

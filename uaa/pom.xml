@@ -67,9 +67,32 @@
 								</configuration>
 							</execution>
 						</executions>
+						<configuration>
+                            <systemProperties>
+                                <CLOUD_FOUNDRY_CONFIG_PATH>${CLOUD_FOUNDRY_CONFIG_PATH}</CLOUD_FOUNDRY_CONFIG_PATH>
+                                <UAA_PROFILE>local</UAA_PROFILE>
+                            </systemProperties>
+                            <addContextWarDependencies>true</addContextWarDependencies>
+                        </configuration>
 					</plugin>
 				</plugins>
 			</build>
+			<dependencies>
+                    <dependency>
+                         <groupId>org.cloudfoundry.identity</groupId>
+                         <artifactId>api</artifactId>
+                         <version>${project.version}</version>
+                         <type>war</type>
+                         <scope>tomcat</scope>
+                    </dependency>
+                    <dependency>
+                         <groupId>org.cloudfoundry.identity</groupId>
+                         <artifactId>app</artifactId>
+                         <version>${project.version}</version>
+                         <type>war</type>
+                         <scope>tomcat</scope>
+                    </dependency>
+            </dependencies>
 		</profile>
 		<profile>
 			<id>release</id>
