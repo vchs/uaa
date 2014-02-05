@@ -33,6 +33,8 @@ public class UaaAuthenticationDetails implements Serializable {
 
 	private String clientId;
 
+	private String tenantId;
+
 	private Map<String, String> extendedAuthorizationInfo;
 
 	public UaaAuthenticationDetails(HttpServletRequest request) {
@@ -42,6 +44,10 @@ public class UaaAuthenticationDetails implements Serializable {
 		String clientId = request.getParameter("client_id");
 		if (clientId != null) {
 			this.clientId = clientId;
+		}
+		String tenantId = request.getParameter("tenant_id");
+		if (tenantId != null) {
+			this.tenantId = tenantId;
 		}
 	}
 
@@ -120,5 +126,9 @@ public class UaaAuthenticationDetails implements Serializable {
 
 	public Map<String, String> getExtendedAuthorizationInfo() {
 		return extendedAuthorizationInfo;
+	}
+
+	public String getTenantId() {
+		return tenantId;
 	}
 }
