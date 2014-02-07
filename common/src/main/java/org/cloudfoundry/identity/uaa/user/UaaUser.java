@@ -33,6 +33,8 @@ public class UaaUser {
 
 	private final String username;
 
+	private final String tenantId;
+
 	private final String password;
 
 	private final String email;
@@ -47,12 +49,12 @@ public class UaaUser {
 
 	private final List<? extends GrantedAuthority> authorities;
 
-	public UaaUser(String username, String password, String email, String givenName, String familyName) {
-		this("NaN", username, password, email, UaaAuthority.USER_AUTHORITIES, givenName, familyName, new Date(),
+	public UaaUser(String username, String password, String tenantId, String email, String givenName, String familyName) {
+		this("NaN", username, password, tenantId, email, UaaAuthority.USER_AUTHORITIES, givenName, familyName, new Date(),
 				new Date());
 	}
 
-	public UaaUser(String id, String username, String password, String email, List<? extends GrantedAuthority> authorities,
+	public UaaUser(String id, String username, String password, String tenantId, String email, List<? extends GrantedAuthority> authorities,
 			String givenName, String familyName, Date created, Date modified) {
 		Assert.hasText(username, "Username cannot be empty");
 		Assert.hasText(id, "Id cannot be null");
@@ -60,6 +62,7 @@ public class UaaUser {
 		this.id = id;
 		this.username = username;
 		this.password = password;
+		this.tenantId = tenantId;
 		// TODO: Canonicalize email?
 		this.email = email;
 		this.familyName = familyName;
@@ -85,6 +88,10 @@ public class UaaUser {
 		return email;
 	}
 
+	public String getTenantId() {
+		return tenantId;
+	}
+
 	public String getGivenName() {
 		return givenName;
 	}
@@ -101,7 +108,7 @@ public class UaaUser {
 		if (!"NaN".equals(this.id)) {
 			throw new IllegalStateException("Id already set");
 		}
-		return new UaaUser(id, username, password, email, authorities, givenName, familyName, created, modified);
+		return new UaaUser(id, username, password, tenantId, email, authorities, givenName, familyName, created, modified);
 	}
 
 	public UaaUser authorities(Collection<? extends GrantedAuthority> authorities) {
@@ -113,13 +120,13 @@ public class UaaUser {
 		if (!values.contains(UaaAuthority.UAA_USER)) {
 			values.add(UaaAuthority.UAA_USER);
 		}
-		UaaUser user = new UaaUser(id, username, password, email, values, givenName, familyName, created, modified);
+		UaaUser user = new UaaUser(id, username, password, tenantId, email, values, givenName, familyName, created, modified);
 		return user;
 	}
 
 	@Override
 	public String toString() {
-		return "[UaaUser {id=" + id + ", username=" + username + ", email=" + email + ", givenName=" + givenName
+		return "[UaaUser {id=" + id + ", username=" + username + ", tenantId=" + tenantId + ", email=" + email + ", givenName=" + givenName
 				+ ", familyName=" + familyName + "}]";
 	}
 

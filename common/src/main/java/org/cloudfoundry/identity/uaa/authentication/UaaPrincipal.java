@@ -26,11 +26,13 @@ public class UaaPrincipal implements Principal, Serializable {
 	private final String id;
 	private final String name;
 	private final String email;
+	private final String tenantId;
 
 	public UaaPrincipal(UaaUser user) {
 		this.id = user.getId();
 		this.name = user.getUsername();
 		this.email = user.getEmail();
+		this.tenantId = user.getTenantId();
 	}
 
 	public String getId() {
@@ -44,6 +46,10 @@ public class UaaPrincipal implements Principal, Serializable {
 
 	public String getEmail() {
 		return email;
+	}
+
+	public String getTenantId() {
+		return tenantId;
 	}
 
 	/**

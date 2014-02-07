@@ -78,7 +78,11 @@ public class LoginAuthenticationManager implements AuthenticationManager, Applic
 			if (authentication.isClientOnly()) {
 				UaaUser user = getUser(req, info);
 				try {
-					user = userDatabase.retrieveUserByName(user.getUsername());
+					String username = user.getUsername();
+					if ( null != user.getTenantId() ) {
+						username = user.getTenantId() + "/" + user.getUsername();
+					}
+					user = userDatabase.retrieveUserByName(username);
 				}
 				catch (UsernameNotFoundException e) {
 					// Not necessarily fatal
@@ -86,7 +90,11 @@ public class LoginAuthenticationManager implements AuthenticationManager, Applic
 						// Register new users automatically
 						publish(new NewUserAuthenticatedEvent(user));
 						try {
-							user = userDatabase.retrieveUserByName(user.getUsername());
+							String username = user.getUsername();
+							if ( null != user.getTenantId() ) {
+								username = user.getTenantId() + "/" + user.getUsername();
+							}
+							user = userDatabase.retrieveUserByName(username);
 						}
 						catch (UsernameNotFoundException ex) {
 							throw new BadCredentialsException("Bad credentials");
@@ -139,6 +147,13 @@ public class LoginAuthenticationManager implements AuthenticationManager, Applic
 		if (familyName == null) {
 			familyName = email.split("@")[1];
 		}
-		return new UaaUser(name, generator.generate(), email, givenName, familyName);
+		String tenantId = null;
+		if (req.getDetails() instanceof UaaAuthenticationDetails) {
+			if (null != ((UaaAuthenticationDetails)req.getDetails()).getTenantId()) {
+				tenantId = ((UaaAuthenticationDetails)req.getDetails()).getTenantId();
+			}
+		}
+
+		return new UaaUser(name, generator.generate(), tenantId, email, givenName, familyName);
 	}
 }

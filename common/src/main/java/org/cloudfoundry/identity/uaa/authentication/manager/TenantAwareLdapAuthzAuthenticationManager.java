@@ -1,15 +1,3 @@
-/*
- * Cloud Foundry 2012.02.03 Beta
- * Copyright (c) [2009-2012] VMware, Inc. All Rights Reserved.
- *
- * This product is licensed to you under the Apache License, Version 2.0 (the "License").
- * You may not use this product except in compliance with the License.
- *
- * This product includes a number of subcomponents with
- * separate copyright notices and license terms. Your use of these
- * subcomponents is subject to the terms and conditions of the
- * subcomponent's license, as noted in the LICENSE file.
- */
 package org.cloudfoundry.identity.uaa.authentication.manager;
 
 import java.security.SecureRandom;
@@ -22,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import org.cloudfoundry.identity.uaa.authentication.UaaAuthentication;
 import org.cloudfoundry.identity.uaa.authentication.UaaAuthenticationDetails;
 import org.cloudfoundry.identity.uaa.authentication.UaaPrincipal;
-import org.cloudfoundry.identity.uaa.authentication.event.UserAuthenticationFailureEvent;
 import org.cloudfoundry.identity.uaa.authentication.event.UserAuthenticationSuccessEvent;
 import org.cloudfoundry.identity.uaa.authentication.event.UserNotFoundEvent;
 import org.cloudfoundry.identity.uaa.user.UaaUser;
@@ -31,7 +18,9 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.authentication.event.AuthenticationFailureLockedEvent;
 import org.springframework.security.core.Authentication;
@@ -42,32 +31,25 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-/**
- * @author Luke Taylor
- * @author Dave Syer
- *
- */
-public class AuthzAuthenticationManager implements AuthenticationManager, ApplicationEventPublisherAware {
+public class TenantAwareLdapAuthzAuthenticationManager implements AuthenticationManager, ApplicationEventPublisherAware {
 
-	private final Log logger = LogFactory.getLog(getClass());
-	private final PasswordEncoder encoder;
-	private final UaaUserDatabase userDatabase;
 	private ApplicationEventPublisher eventPublisher;
+	private final PasswordEncoder encoder = new BCryptPasswordEncoder();
+	private final UaaUserDatabase userDatabase;
+	private final Log logger = LogFactory.getLog(getClass());
 	private AccountLoginPolicy accountLoginPolicy = new PermitAllAccountLoginPolicy();
+	private final AuthenticationProvider ldapAuthProvider;
+
 	/**
 	 * Dummy user allows the authentication process for non-existent and locked out users to be as close to
 	 * that of normal users as possible to avoid differences in timing.
 	 */
 	private final UaaUser dummyUser;
 
-	public AuthzAuthenticationManager(UaaUserDatabase cfusers) {
-		this(cfusers, new BCryptPasswordEncoder());
-	}
-
-	public AuthzAuthenticationManager(UaaUserDatabase userDatabase, PasswordEncoder encoder) {
+	public TenantAwareLdapAuthzAuthenticationManager(UaaUserDatabase userDatabase, AuthenticationProvider authProvider) {
 		this.userDatabase = userDatabase;
-		this.encoder = encoder;
 		this.dummyUser = createDummyUser();
+		this.ldapAuthProvider = authProvider;
 	}
 
 	@Override
@@ -80,23 +62,24 @@ public class AuthzAuthenticationManager implements AuthenticationManager, Applic
 			throw e;
 		}
 
-		String username = req.getName().toLowerCase(Locale.US);
-		if ( req.getDetails() instanceof UaaAuthenticationDetails &&
-				null != ((UaaAuthenticationDetails)req.getDetails()).getTenantId()) {
-			username = ((UaaAuthenticationDetails)req.getDetails()).getTenantId() + "/" + username;
-		}
+		String tenantId = ((UaaAuthenticationDetails)((UsernamePasswordAuthenticationToken) req).getDetails()).getTenantId();
 
 		UaaUser user;
+		Authentication authResponse;
 		try {
-			user = userDatabase.retrieveUserByName(username);
+			user = userDatabase.retrieveUserByName(tenantId + "/" + req.getName().toLowerCase(Locale.US));
+			authResponse = ldapAuthProvider.authenticate(req);
+		}
+		catch (BadCredentialsException bce) {
+			user = dummyUser;
+			authResponse = null;
 		}
 		catch (UsernameNotFoundException e) {
 			user = dummyUser;
+			authResponse = null;
 		}
 
-		final boolean passwordMatches = encoder.matches((CharSequence) req.getCredentials(), user.getPassword());
-
-		if (!accountLoginPolicy.isAllowed(user, req)) {
+		if (!accountLoginPolicy.isAllowed(user, authResponse)) {
 			logger.warn("Login policy rejected authentication for " + user.getUsername() + ", " + user.getId()
 					+ ". Ignoring login request.");
 			BadCredentialsException e = new BadCredentialsException("Login policy rejected authentication");
@@ -104,22 +87,17 @@ public class AuthzAuthenticationManager implements AuthenticationManager, Applic
 			throw e;
 		}
 
-		if (passwordMatches) {
-			logger.debug("Password successfully matched");
+		if (user == dummyUser) {
+			logger.debug("No user named '" + req.getName() + "' was found");
+			publish(new UserNotFoundEvent(req));
+		} else {
 			Authentication success = new UaaAuthentication(new UaaPrincipal(user),
-						user.getAuthorities(), (UaaAuthenticationDetails) req.getDetails());
+					user.getAuthorities(), (UaaAuthenticationDetails) req.getDetails());
 			publish(new UserAuthenticationSuccessEvent(user, success));
 
 			return success;
 		}
 
-		if (user == dummyUser) {
-			logger.debug("No user named '" + req.getName() + "' was found");
-			publish(new UserNotFoundEvent(req));
-		} else {
-			logger.debug("Password did not match for user " + req.getName());
-			publish(new UserAuthenticationFailureEvent(user, req));
-		}
 		BadCredentialsException e = new BadCredentialsException("Bad credentials");
 		publish(new AuthenticationFailureBadCredentialsEvent(req, e));
 		throw e;
@@ -131,13 +109,13 @@ public class AuthzAuthenticationManager implements AuthenticationManager, Applic
 		}
 	}
 
-	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher eventPublisher) {
-		this.eventPublisher = eventPublisher;
-	}
-
 	public void setAccountLoginPolicy(AccountLoginPolicy accountLoginPolicy) {
 		this.accountLoginPolicy = accountLoginPolicy;
+	}
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+		this.eventPublisher = applicationEventPublisher;
 	}
 
 	private UaaUser createDummyUser() {

@@ -57,7 +57,7 @@ import org.springframework.web.client.RestOperations;
 
 /**
  * @author Dave Syer
- * 
+ *
  */
 public class TestAccountSetup extends TestWatchman {
 
@@ -215,7 +215,7 @@ public class TestAccountSetup extends TestWatchman {
 		}
 		@SuppressWarnings("unchecked")
 		Collection<Map<String,String>> groups = (Collection<Map<String,String>>)map.get("groups");
-		return new UaaUser(id, userName, "<N/A>", email, extractAuthorities(groups), givenName, familyName, new Date(), new Date());
+		return new UaaUser(id, userName, "<N/A>", null, email, extractAuthorities(groups), givenName, familyName, new Date(), new Date());
 	}
 
 	private List<? extends GrantedAuthority> extractAuthorities(Collection<Map<String, String>> groups) {

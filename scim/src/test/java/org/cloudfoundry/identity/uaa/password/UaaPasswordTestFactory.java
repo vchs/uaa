@@ -19,12 +19,12 @@ import org.cloudfoundry.identity.uaa.user.UaaUser;
 
 /**
  * @author Dave Syer
- * 
+ *
  */
 public class UaaPasswordTestFactory {
 
 	public static UaaPrincipal getPrincipal(String id, String name, String email) {
-		return new UaaPrincipal(new UaaUser(id, name, email, name, "unknown"));
+		return new UaaPrincipal(new UaaUser(id, name, null, email, name, "unknown"));
 	}
 
 	public static UaaAuthentication getAuthentication(String id, String name, String email) {

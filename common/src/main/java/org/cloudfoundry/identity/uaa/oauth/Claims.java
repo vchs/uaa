@@ -38,6 +38,7 @@ public class Claims {
 	public static String ISS = "iss";
 	public static String IAT = "iat";
 	public static String CID = "cid";
+	public static String TID = "tid";
 	public static String GRANT_TYPE = "grant_type";
 	public static String ADDITIONAL_AZ_ATTR = "az_attr";
 }

@@ -16,6 +16,7 @@ import static org.cloudfoundry.identity.uaa.oauth.Claims.EMAIL;
 import static org.cloudfoundry.identity.uaa.oauth.Claims.FAMILY_NAME;
 import static org.cloudfoundry.identity.uaa.oauth.Claims.GIVEN_NAME;
 import static org.cloudfoundry.identity.uaa.oauth.Claims.NAME;
+import static org.cloudfoundry.identity.uaa.oauth.Claims.TID;
 import static org.cloudfoundry.identity.uaa.oauth.Claims.USER_ID;
 import static org.cloudfoundry.identity.uaa.oauth.Claims.USER_NAME;
 
@@ -70,7 +71,13 @@ public class UserInfoEndpoint implements InitializingBean {
 	}
 
 	protected Map<String, String> getResponse(UaaPrincipal principal) {
-		UaaUser user = userDatabase.retrieveUserByName(principal.getName());
+
+		String username = principal.getName();
+		if (null != principal.getTenantId()) {
+			username = principal.getTenantId() + "/" + username;
+		}
+
+		UaaUser user = userDatabase.retrieveUserByName(username);
 		Map<String, String> response = new LinkedHashMap<String, String>() {
 			@Override
 			public String put(String key, String value) {
@@ -82,6 +89,7 @@ public class UserInfoEndpoint implements InitializingBean {
 		};
 		response.put(USER_ID, user.getId());
 		response.put(USER_NAME, user.getUsername());
+		response.put(TID, user.getTenantId());
 		response.put(GIVEN_NAME, user.getGivenName());
 		response.put(FAMILY_NAME, user.getFamilyName());
 		response.put(NAME, (user.getGivenName() != null ? user.getGivenName() : "")

@@ -38,10 +38,10 @@ import org.springframework.util.StringUtils;
 
 /**
  * UAA specific test account data externalized with {@link TestProfileEnvironment}.
- * 
+ *
  * @author Dave Syer
  * @author Joel D'sa
- * 
+ *
  */
 public class UaaTestAccounts implements TestAccounts {
 
@@ -101,7 +101,7 @@ public class UaaTestAccounts implements TestAccounts {
 	}
 
 	public UaaUser getUser() {
-		UaaUser user = new UaaUser(UUID.randomUUID().toString(), getUserName(), "<N/A>", getEmail(),
+		UaaUser user = new UaaUser(UUID.randomUUID().toString(), getUserName(), "<N/A>", null, getEmail(),
 				UaaAuthority.USER_AUTHORITIES, "Test", "User", new Date(), new Date());
 		ReflectionTestUtils.setField(user, "password", getPassword());
 		return user;

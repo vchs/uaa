@@ -13,9 +13,20 @@
 package org.cloudfoundry.identity.uaa.authentication.manager;
 
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.cloudfoundry.identity.uaa.authentication.AuthzAuthenticationRequest;
 import org.cloudfoundry.identity.uaa.authentication.UaaAuthenticationDetails;
@@ -32,10 +43,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * @author Luke Taylor
  */
@@ -45,7 +52,7 @@ public class AuthzAuthenticationManagerTests {
 	private ApplicationEventPublisher publisher;
 	// "password"
 	private static final String PASSWORD = "$2a$10$HoWPAUn9zqmmb0b.2TBZWe6cjQcxyo8TDwTX.5G46PBL347N3/0zO";
-	private UaaUser user = new UaaUser("auser", PASSWORD, "auser@blah.com", "A", "User");
+	private UaaUser user = new UaaUser("auser", PASSWORD, null, "auser@blah.com", "A", "User");
 
 	@Before
 	public void setUp() throws Exception {

@@ -55,7 +55,7 @@ public class UaaUserEditor extends PropertyEditorSupport {
 			}
 		}
 
-		UaaUser user = new UaaUser(username, password, email, firstName, lastName);
+		UaaUser user = new UaaUser(username, password, null, email, firstName, lastName);
 		if (authorities != null) {
 			user = user.authorities(AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
 		}

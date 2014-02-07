@@ -12,6 +12,7 @@
  */
 package org.cloudfoundry.identity.uaa.oauth;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,7 +22,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
+import org.apache.commons.lang.StringUtils;
 import org.cloudfoundry.identity.uaa.authorization.ExternalGroupMappingAuthorizationManager;
 import org.cloudfoundry.identity.uaa.security.DefaultSecurityContextAccessor;
 import org.cloudfoundry.identity.uaa.security.SecurityContextAccessor;
@@ -118,24 +121,25 @@ public class UaaAuthorizationRequestManager implements AuthorizationRequestManag
 
 		String clientId = authorizationParameters.get("client_id");
 		BaseClientDetails clientDetails = new BaseClientDetails(clientDetailsService.loadClientByClientId(clientId));
+		// Map the variables in the client scopes to the values in the authorization parameters
+		Set<String> clientAuthorizedScopes = mapVariableScopes(clientDetails.getScope(), authorizationParameters);
 
-		Set<String> scopes = OAuth2Utils.parseParameterList(authorizationParameters.get("scope"));
+		Set<String> requestedScopes = OAuth2Utils.parseParameterList(authorizationParameters.get("scope"));
 		String grantType = authorizationParameters.get("grant_type");
-		if ((scopes == null || scopes.isEmpty())) {
+		if ((requestedScopes == null || requestedScopes.isEmpty())) {
 			if ("client_credentials".equals(grantType)) {
 				// The client authorities should be a list of scopes
-				scopes = AuthorityUtils.authorityListToSet(clientDetails.getAuthorities());
+				requestedScopes = AuthorityUtils.authorityListToSet(clientDetails.getAuthorities());
 			}
 			else {
 				// The default for a user token is the scopes registered with the client
-				scopes = clientDetails.getScope();
+				requestedScopes = clientAuthorizedScopes;
 			}
 		}
 
-
 		Set<String> scopesFromExternalAuthorities = null;
 		if (!"client_credentials".equals(grantType) && securityContextAccessor.isUser()) {
-			scopes = checkUserScopes(scopes, securityContextAccessor.getAuthorities(), clientDetails);
+			requestedScopes = checkUserScopes(requestedScopes, securityContextAccessor.getAuthorities(), clientAuthorizedScopes);
 
 			// TODO: will the grantType ever contain client_credentials or authorization_code
 			// External Authorities are things like LDAP groups that will be mapped to Oauth scopes
@@ -146,11 +150,11 @@ public class UaaAuthorizationRequestManager implements AuthorizationRequestManag
 			scopesFromExternalAuthorities = findScopesFromAuthorities(authorizationParameters.get("authorities"));
 		}
 
-		Set<String> resourceIds = getResourceIds(clientDetails, scopes);
+		Set<String> resourceIds = getResourceIds(clientDetails, requestedScopes);
 		clientDetails.setResourceIds(resourceIds);
 		DefaultAuthorizationRequest request = new DefaultAuthorizationRequest(authorizationParameters);
-		if (!scopes.isEmpty()) {
-			request.setScope(scopes);
+		if (!requestedScopes.isEmpty()) {
+			request.setScope(requestedScopes);
 		}
 		if (scopesFromExternalAuthorities != null) {
 			Map<String, String> existingAuthorizationParameters = new LinkedHashMap<String, String>();
@@ -162,6 +166,30 @@ public class UaaAuthorizationRequestManager implements AuthorizationRequestManag
 		request.addClientDetails(clientDetails);
 
 		return request;
+	}
+
+	private Set<String> mapVariableScopes(Set<String> scopes, Map<String, String> authorizationParameters) {
+		Set<String> resultScopes = new TreeSet<String>();
+
+		for (String scope : scopes) {
+			String[] scopeComponents = scope.split("\\.");
+			if (scopeComponents.length > 1) {
+				ArrayList<String> resultComponents = new ArrayList<String>();
+				for (String scopeComponent : scopeComponents) {
+					String scopeComponentResult = scopeComponent;
+					if (scopeComponent.startsWith("@")) {
+						String authorizationParameter = scopeComponent.substring(1);
+						scopeComponentResult = authorizationParameters.get(authorizationParameter);
+					}
+					resultComponents.add(scopeComponentResult);
+				}
+				resultScopes.add(StringUtils.join(resultComponents, "."));
+			} else {
+				resultScopes.add(scope);
+			}
+		}
+
+		return resultScopes;
 	}
 
 	private Set<String> findScopesFromAuthorities(String authorities) {
@@ -182,14 +210,17 @@ public class UaaAuthorizationRequestManager implements AuthorizationRequestManag
 	@Override
 	public void validateParameters(Map<String, String> parameters, ClientDetails clientDetails) {
 		if (parameters.containsKey("scope")) {
-			Set<String> validScope = clientDetails.getScope();
+			Set<String> validScopes = clientDetails.getScope();
 			if ("client_credentials".equals(parameters.get("grant_type"))) {
-				validScope = AuthorityUtils.authorityListToSet(clientDetails.getAuthorities());
+				validScopes = AuthorityUtils.authorityListToSet(clientDetails.getAuthorities());
 			}
+
+			validScopes = mapVariableScopes(validScopes, parameters);
+
 			for (String scope : OAuth2Utils.parseParameterList(parameters.get("scope"))) {
-				if (!validScope.contains(scope)) {
+				if (!validScopes.contains(scope)) {
 					throw new InvalidScopeException("Invalid scope: " + scope
-							+ ". Did you know that you can get default scopes by simply sending no value?", validScope);
+							+ ". Did you know that you can get default scopes by simply sending no value?", validScopes);
 				}
 			}
 		}
@@ -204,7 +235,7 @@ public class UaaAuthorizationRequestManager implements AuthorizationRequestManag
 	 * @return modified scopes adapted according to the rules specified
 	 */
 	private Set<String> checkUserScopes(Set<String> scopes, Collection<? extends GrantedAuthority> authorities,
-			ClientDetails clientDetails) {
+			Set<String> clientPermittedScopes) {
 
 		Set<String> result = new LinkedHashSet<String>(scopes);
 		Set<String> allowed = new LinkedHashSet<String>(AuthorityUtils.authorityListToSet(authorities));
@@ -214,7 +245,7 @@ public class UaaAuthorizationRequestManager implements AuthorizationRequestManag
 		// Find intersection of user authorities, default scopes and client scopes:
 		for (Iterator<String> iter = allowed.iterator(); iter.hasNext();) {
 			String scope = iter.next();
-			if (!clientDetails.getScope().contains(scope)) {
+			if (!clientPermittedScopes.contains(scope)) {
 				iter.remove();
 			}
 		}
@@ -228,11 +259,11 @@ public class UaaAuthorizationRequestManager implements AuthorizationRequestManag
 		}
 
 		// Check that a token with empty scope is not going to be granted
-		if (result.isEmpty() && !clientDetails.getScope().isEmpty()) {
+		if (result.isEmpty() && !clientPermittedScopes.isEmpty()) {
 			throw new InvalidScopeException(
 					"Invalid scope (empty) - this user is not allowed any of the requested scopes: " + scopes
-							+ " (either you requested a scope that was not allowed or client '"
-							+ clientDetails.getClientId() + "' is not allowed to act on behalf of this user)", allowed);
+							+ " (either you requested a scope that was not allowed or the client is"
+							+ " not allowed to act on behalf of this user)", allowed);
 		}
 
 		return result;

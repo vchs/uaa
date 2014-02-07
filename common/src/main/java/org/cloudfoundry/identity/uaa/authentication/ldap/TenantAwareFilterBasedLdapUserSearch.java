@@ -13,12 +13,12 @@ import org.springframework.security.ldap.search.LdapUserSearch;
  *
  * Changes the search base according to the tenant id
  *
- * @see TenantRecognizingBindAuthenticator
+ * @see TenantAwareBindAuthenticator
  *
  * @author jdsa
  *
  */
-public class DynamicFilterBasedLdapUserSearch implements LdapUserSearch {
+public class TenantAwareFilterBasedLdapUserSearch implements LdapUserSearch {
 
 	private String dynamicSearchBase = "";
 
@@ -26,7 +26,7 @@ public class DynamicFilterBasedLdapUserSearch implements LdapUserSearch {
 
 	private final String searchFilter;
 
-	public DynamicFilterBasedLdapUserSearch(String searchFilter,
+	public TenantAwareFilterBasedLdapUserSearch(String searchFilter,
 			String dynamicSearchBase, BaseLdapPathContextSource contextSource) {
 		this.searchFilter = searchFilter;
 		this.dynamicSearchBase = dynamicSearchBase;
@@ -40,7 +40,7 @@ public class DynamicFilterBasedLdapUserSearch implements LdapUserSearch {
 		String tenantId = tenantSlashUsername[0];
 		String email = tenantSlashUsername[1];
 
-		return new FilterBasedLdapUserSearch("cn=" + tenantId + "," + dynamicSearchBase, searchFilter,
+		return new FilterBasedLdapUserSearch("", searchFilter,
 				(BaseLdapPathContextSource) contextSource).searchForUser(email);
 	}
 

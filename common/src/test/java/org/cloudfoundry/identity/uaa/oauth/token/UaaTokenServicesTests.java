@@ -67,7 +67,7 @@ public class UaaTokenServicesTests {
 	// expiry
 	// skew will not be long enough
 	private InMemoryUaaUserDatabase userDatabase = new InMemoryUaaUserDatabase(new HashMap<String, UaaUser>(
-			Collections.singletonMap("jdsa", new UaaUser("12345", "jdsa", "password", "jdsa@vmware.com",
+			Collections.singletonMap("jdsa", new UaaUser("12345", "jdsa", "password", null, "jdsa@vmware.com",
 					UaaAuthority.USER_AUTHORITIES, null, null, new Date(System.currentTimeMillis() - 15000), new Date(
 							System.currentTimeMillis() - 15000)))));
 
@@ -138,7 +138,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		testCreateAccessTokenForAUser(authentication, false);
@@ -154,7 +154,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "password");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		testCreateAccessTokenForAUser(authentication, false);
@@ -181,7 +181,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = testCreateAccessTokenForAUser(authentication, false);
@@ -242,7 +242,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = testCreateAccessTokenForAUser(authentication, false);
@@ -303,7 +303,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = testCreateAccessTokenForAUser(authentication, false);
@@ -371,7 +371,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = testCreateAccessTokenForAUser(authentication, false);
@@ -439,7 +439,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = testCreateAccessTokenForAUser(authentication, false);
@@ -483,7 +483,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = testCreateAccessTokenForAUser(authentication, false);
@@ -512,7 +512,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "implicit");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		testCreateAccessTokenForAUser(authentication, true);
@@ -600,7 +600,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = tokenServices.createAccessToken(authentication);
@@ -683,7 +683,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = tokenServices.createAccessToken(authentication);
@@ -749,7 +749,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = tokenServices.createAccessToken(authentication);
@@ -804,13 +804,13 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = testCreateAccessTokenForAUser(authentication, false);
 
 		UaaUser user = userDatabase.retrieveUserByName("jdsa");
-		UaaUser newUser = new UaaUser(user.getUsername(), "blah", user.getEmail(), null, null);
+		UaaUser newUser = new UaaUser(user.getUsername(), "blah", null, user.getEmail(), null, null);
 		userDatabase.updateUser("jdsa", newUser);
 
 		DefaultAuthorizationRequest refreshAuthorizationRequest = new DefaultAuthorizationRequest("client",
@@ -849,7 +849,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = tokenServices.createAccessToken(authentication);
@@ -876,7 +876,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = testCreateAccessTokenForAUser(authentication, false);
@@ -919,7 +919,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = testCreateAccessTokenForAUser(authentication, false);
@@ -954,7 +954,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = testCreateAccessTokenForAUser(authentication, false);
@@ -987,7 +987,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = testCreateAccessTokenForAUser(authentication, false);
@@ -1014,7 +1014,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = testCreateAccessTokenForAUser(authentication, false);
@@ -1041,7 +1041,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		Calendar expiresAt = Calendar.getInstance();
 		expiresAt.add(Calendar.MILLISECOND, 3000);
@@ -1068,7 +1068,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = testCreateAccessTokenForAUser(authentication, false);
@@ -1076,7 +1076,7 @@ public class UaaTokenServicesTests {
 
 		assertEquals(UaaAuthority.USER_AUTHORITIES, loadedAuthentication.getAuthorities());
 		assertEquals("jdsa", loadedAuthentication.getName());
-		UaaPrincipal uaaPrincipal = new UaaPrincipal(new UaaUser("12345", "jdsa", "password", "jdsa@vmware.com",
+		UaaPrincipal uaaPrincipal = new UaaPrincipal(new UaaUser("12345", "jdsa", "password", null, "jdsa@vmware.com",
 				UaaAuthority.USER_AUTHORITIES, null, null, null, null));
 		assertEquals(uaaPrincipal, loadedAuthentication.getPrincipal());
 		assertNull(loadedAuthentication.getDetails());
@@ -1127,7 +1127,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("grant_type", "authorization_code");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken accessToken = testCreateAccessTokenForAUser(authentication, false);
@@ -1146,7 +1146,7 @@ public class UaaTokenServicesTests {
 		azParameters.put("authorities", "{\"az_attr\":{\"external_group\":\"domain\\\\group1\", \"external_id\":\"abcd1234\"}}");
 		authorizationRequest.setAuthorizationParameters(azParameters);
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(new UaaPrincipal(new UaaUser(
-				"jdsa", "password", "jdsa@vmware.com", null, null)), "n/a", null);
+				"jdsa", "password", null, "jdsa@vmware.com", null, null)), "n/a", null);
 
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
 		OAuth2AccessToken token = testCreateAccessTokenForAUser(authentication, false);

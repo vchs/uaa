@@ -83,17 +83,17 @@ public class JdbcUaaUserDatabase implements UaaUserDatabase {
 		public UaaUser mapRow(ResultSet rs, int rowNum) throws SQLException {
 			String id = rs.getString(1);
 			if (userAuthoritiesQuery==null) {
-			    return new UaaUser(id, rs.getString(2), rs.getString(3), rs.getString(4),
+			    return new UaaUser(id, rs.getString(2), rs.getString(3), null, rs.getString(4),
 	                    getDefaultAuthorities(rs.getString(9)), rs.getString(5), rs.getString(6),
 	                    rs.getTimestamp(7), rs.getTimestamp(8));
 			} else {
 			    List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(getAuthorities(id));
-			    return new UaaUser(id, rs.getString(2), rs.getString(3), rs.getString(4),
+			    return new UaaUser(id, rs.getString(2), rs.getString(3), null, rs.getString(4),
 					authorities, rs.getString(5), rs.getString(6),
 					rs.getTimestamp(7), rs.getTimestamp(8));
 			}
 		}
-		
+
 		private List<GrantedAuthority> getDefaultAuthorities(String defaultAuth) {
 		    List<String> authorities = new ArrayList<String>();
 		    authorities.addAll(StringUtils.commaDelimitedListToSet(defaultAuth));

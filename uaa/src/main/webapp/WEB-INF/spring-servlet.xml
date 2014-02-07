@@ -157,7 +157,27 @@
 	</bean>
 
 	<!--Basic application beans. -->
-	<bean id="loginInfoEndpoint" class="org.cloudfoundry.identity.uaa.authentication.login.LoginInfoEndpoint" />
+	<bean id="loginInfoEndpoint" class="org.cloudfoundry.identity.uaa.authentication.login.LoginInfoEndpoint">
+	   <property name="prompts">
+            <util:list>
+                <bean class="org.cloudfoundry.identity.uaa.authentication.login.Prompt">
+                    <constructor-arg name="name" value="username"/>
+                    <constructor-arg name="text" value="Email"/>
+                    <constructor-arg name="type" value="text"/>
+                </bean>
+                <bean class="org.cloudfoundry.identity.uaa.authentication.login.Prompt">
+                    <constructor-arg name="name" value="password"/>
+                    <constructor-arg name="text" value="Password"/>
+                    <constructor-arg name="type" value="password"/>
+                </bean>
+                <bean class="org.cloudfoundry.identity.uaa.authentication.login.Prompt">
+                    <constructor-arg name="name" value="tenant_id"/>
+                    <constructor-arg name="text" value="Tenant"/>
+                    <constructor-arg name="type" value="text"/>
+                </bean>
+            </util:list>
+        </property>
+	</bean>
 
 	<bean id="healthzEndpoint" class="org.cloudfoundry.identity.uaa.web.HealthzEndpoint" />
 

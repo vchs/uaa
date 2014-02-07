@@ -37,7 +37,7 @@ public class AuditListenerTests {
 
 	private AuditListener listener;
 	private UaaAuditService auditor;
-	private UaaUser user = new UaaUser("auser", "password", "auser@blah.com", "A", "User");
+	private UaaUser user = new UaaUser("auser", "password", null, "auser@blah.com", "A", "User");
 	private UaaAuthenticationDetails details = new UaaAuthenticationDetails(mock(HttpServletRequest.class));
 
 	@Before

@@ -21,25 +21,31 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 
-public class LdapUaaUserDatabase implements UaaUserDatabase {
+public class TenantAwareLdapUaaUserDatabase implements UaaUserDatabase {
 
 	private LdapTemplate ldapTemplate = null;
 	private String[] searchAttributes = {"objectguid","cn","mail","userPrincipalName","gn","sn","memberOf"};
 
-	public LdapUaaUserDatabase(LdapTemplate ldapTemplate) {
+	public TenantAwareLdapUaaUserDatabase(LdapTemplate ldapTemplate) {
 		this.ldapTemplate = ldapTemplate;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public UaaUser retrieveUserByName(String username) throws UsernameNotFoundException {
+
+		String[] tenantSlashUsername = username.split("/");
+
+		String tenantId = tenantSlashUsername[0];
+		String email = tenantSlashUsername[1];
+
 		AndFilter filter = new AndFilter();
-		filter.and(new EqualsFilter("mail", username));
+		filter.and(new EqualsFilter("userPrincipalName", email));
 
 		List<UaaUser> results = ldapTemplate.search(
 			     "", filter.encode(), SearchControls.SUBTREE_SCOPE,
 			     searchAttributes,
-			     new UaaUserAttributesMapper());
+			     new UaaUserAttributesMapper(tenantId));
 
 		if (null != results && results.size() > 0) {
 			return results.get(0);
@@ -49,27 +55,33 @@ public class LdapUaaUserDatabase implements UaaUserDatabase {
 	}
 
 	public class UaaUserAttributesMapper implements AttributesMapper {
+		private String tenantId = null;
+
+		public UaaUserAttributesMapper(String tenantId) {
+			this.tenantId = tenantId;
+		}
+
 		@Override
 		public UaaUser mapFromAttributes(Attributes attrs) throws NamingException {
 			String id = getAttributeValue(attrs, "objectguid");
-			String username = getAttributeValue(attrs, "cn");
-			String email = getAttributeValue(attrs, "mail");
+			String username = getAttributeValue(attrs, "userPrincipalName");
+			String email = getAttributeValue(attrs, "userPrincipalName");
 			if (null == email) {
-				email = getAttributeValue(attrs, "userPrincipalName");
+				email = getAttributeValue(attrs, "mail");
 			}
 			String givenName = getAttributeValue(attrs, "gn");
 			String familyName = getAttributeValue(attrs, "sn");
 			List<String> groups = getAttributeValues(attrs, "memberOf");
 
 			List<GrantedAuthority> authorities =
-					AuthorityUtils.commaSeparatedStringToAuthorityList(convertToScopes(groups));
+					AuthorityUtils.commaSeparatedStringToAuthorityList(convertToScopes(tenantId, groups));
 
 			// TODO: Authorities needs to change to map the users group membership along with the default authorities
-			return new UaaUser(id, username, null, email, authorities, givenName, familyName, new Date(),
+			return new UaaUser(id, username, null, tenantId, email, authorities, givenName, familyName, new Date(),
 					new Date());
 		}
 
-		private String convertToScopes(List<String> groups) {
+		private String convertToScopes(String tenantId, List<String> groups) {
 			ArrayList<String> scopeList = new ArrayList<String>();
 
 			for (String group : groups) {
@@ -79,19 +91,23 @@ public class LdapUaaUserDatabase implements UaaUserDatabase {
 
 				Iterator<String> i = dnComponents.iterator();
 
-				while(i.hasNext() && !i.next().equals("cn=tenants")) {}
+				//Traverse the base dn till you find ou=tenants
+				while(i.hasNext() && !i.next().equals("ou=tenants")) {}
 
-				String dnComponent = i.next();
-				String[] attributeNameAndValue = dnComponent.split("=");
-				String scope = attributeNameAndValue[1];
+				if (i.hasNext()) {
+					//Find the tenant o=coke
+					if (i.next().equals("o=" + tenantId)) {
+						String dnComponent = i.next();
+						String[] attributeNameAndValue = dnComponent.split("=");
+						String scope = attributeNameAndValue[1];
 
-				while(i.hasNext()) {
-					dnComponent = i.next();
-					attributeNameAndValue = dnComponent.split("=");
-					scope += "." + attributeNameAndValue[1];
+						//This is indeed the last dn element (the group that the user belongs to)
+						//cn=coke.service.users
+						if (!i.hasNext()) {
+							scopeList.add(scope);
+						}
+					}
 				}
-
-				scopeList.add(scope);
 			}
 
 			String[] scopes = new String[scopeList.size()];
@@ -109,10 +125,10 @@ public class LdapUaaUserDatabase implements UaaUserDatabase {
 			}
 		}
 
-		private List getAttributeValues(Attributes attrs, String attributeName) throws NamingException {
+		private List<String> getAttributeValues(Attributes attrs, String attributeName) throws NamingException {
 			Attribute attribute = attrs.get(attributeName);
 			if(null != attribute) {
-				return Collections.list(attribute.getAll());
+				return (List<String>) Collections.list(attribute.getAll());
 			} else {
 				return null;
 			}

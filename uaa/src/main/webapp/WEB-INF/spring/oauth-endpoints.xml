@@ -251,24 +251,36 @@
 
 	<beans profile="ldap">
        
-        <bean id="userDatabase" class="org.cloudfoundry.identity.uaa.user.LdapUaaUserDatabase">
+        <bean id="userDatabase" class="org.cloudfoundry.identity.uaa.user.TenantAwareLdapUaaUserDatabase">
            <constructor-arg ref="ldapTemplate" />
         </bean>
        
-       <sec:authentication-manager alias="authzAuthenticationMgr">
+        <!-- <sec:authentication-manager alias="authzAuthenticationMgr">
             <sec:authentication-provider ref="ldapAuthProvider" />
-        </sec:authentication-manager>
+        </sec:authentication-manager> -->
+        
+        <bean id="authzAuthenticationMgr" class="org.cloudfoundry.identity.uaa.authentication.manager.TenantAwareLdapAuthzAuthenticationManager">
+	        <constructor-arg ref="userDatabase" />
+	        <constructor-arg ref="ldapAuthProvider" />
+	        <property name="accountLoginPolicy">
+	            <bean class="org.cloudfoundry.identity.uaa.authentication.manager.PeriodLockoutPolicy">
+	                <constructor-arg ref="jdbcAuditService" />
+	                <property name="lockoutAfterFailures" value="5" />
+	                <property name="lockoutPeriodSeconds" value="300" />
+	            </bean>
+	        </property>
+	    </bean>
         
         <bean id="userSearch"
-            class="org.cloudfoundry.identity.uaa.authentication.ldap.DynamicFilterBasedLdapUserSearch">
-            <constructor-arg index="0" value="(mail={0})" />
-            <constructor-arg index="1" value="cn=tenants" />
+            class="org.cloudfoundry.identity.uaa.authentication.ldap.TenantAwareFilterBasedLdapUserSearch">
+            <constructor-arg index="0" value="(userPrincipalName={0})" />
+            <constructor-arg index="1" value="ou=tenants" />
             <constructor-arg index="2" ref="contextSource" />
        </bean>
         
         <bean id="ldapAuthProvider" class="org.springframework.security.ldap.authentication.LdapAuthenticationProvider">
             <constructor-arg>
-                <bean class="org.cloudfoundry.identity.uaa.authentication.ldap.TenantRecognizingBindAuthenticator">
+                <bean class="org.cloudfoundry.identity.uaa.authentication.ldap.TenantAwareBindAuthenticator">
                     <constructor-arg ref="contextSource" />
                     <property name="userSearch" ref="userSearch" />
                 </bean>

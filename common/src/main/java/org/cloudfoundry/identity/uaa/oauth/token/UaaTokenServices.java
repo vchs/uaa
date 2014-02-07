@@ -25,6 +25,7 @@ import static org.cloudfoundry.identity.uaa.oauth.Claims.ISS;
 import static org.cloudfoundry.identity.uaa.oauth.Claims.JTI;
 import static org.cloudfoundry.identity.uaa.oauth.Claims.SCOPE;
 import static org.cloudfoundry.identity.uaa.oauth.Claims.SUB;
+import static org.cloudfoundry.identity.uaa.oauth.Claims.TID;
 import static org.cloudfoundry.identity.uaa.oauth.Claims.USER_ID;
 import static org.cloudfoundry.identity.uaa.oauth.Claims.USER_NAME;
 
@@ -45,6 +46,7 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudfoundry.identity.uaa.authentication.UaaAuthentication;
+import org.cloudfoundry.identity.uaa.authentication.UaaAuthenticationDetails;
 import org.cloudfoundry.identity.uaa.authentication.UaaPrincipal;
 import org.cloudfoundry.identity.uaa.oauth.approval.Approval;
 import org.cloudfoundry.identity.uaa.oauth.approval.Approval.ApprovalStatus;
@@ -139,6 +141,11 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 		}
 
 		String username = (String) claims.get(USER_NAME);
+		String tenantId = (String) claims.get(TID);
+
+		if ( null != tenantId && !tenantId.isEmpty() ) {
+			username = tenantId + "/" + username;
+		}
 
 		// TODO: Need to add a lookup by id so that the refresh token does not need to contain a name
 		UaaUser user = userDatabase.retrieveUserByName(username);
@@ -190,7 +197,7 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 		@SuppressWarnings("unchecked")
 		Map<String, String> additionalAuthorizationInfo = (Map<String, String>) claims.get(ADDITIONAL_AZ_ATTR);
 
-		OAuth2AccessToken accessToken = createAccessToken(user.getId(), user.getUsername(), user.getEmail(),
+		OAuth2AccessToken accessToken = createAccessToken(user.getId(), user.getUsername(), tenantId, user.getEmail(),
 				validity != null ? validity.intValue() : accessTokenValiditySeconds, null, requestedScopes, clientId,
 				request.getResourceIds(), grantType, refreshTokenValue, additionalAuthorizationInfo);
 
@@ -230,7 +237,7 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 		}
 	}
 
-	private OAuth2AccessToken createAccessToken(String userId, String username, String userEmail, int validitySeconds,
+	private OAuth2AccessToken createAccessToken(String userId, String username, String tenantId, String userEmail, int validitySeconds,
 			Collection<GrantedAuthority> clientScopes, Set<String> requestedScopes, String clientId,
 			Set<String> resourceIds, String grantType, String refreshToken, Map<String, String> additionalAuthorizationAttributes) throws AuthenticationException {
 		String tokenId = UUID.randomUUID().toString();
@@ -256,7 +263,7 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 
 		String content;
 		try {
-			content = mapper.writeValueAsString(createJWTAccessToken(accessToken, userId, username, userEmail,
+			content = mapper.writeValueAsString(createJWTAccessToken(accessToken, userId, username, tenantId, userEmail,
 					clientScopes, requestedScopes, clientId, resourceIds, grantType, refreshToken));
 		}
 		catch (Exception e) {
@@ -270,7 +277,7 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 		return accessToken;
 	}
 
-	private Map<String, ?> createJWTAccessToken(OAuth2AccessToken token, String userId, String username,
+	private Map<String, ?> createJWTAccessToken(OAuth2AccessToken token, String userId, String username, String tenantId,
 			String userEmail, Collection<GrantedAuthority> clientScopes, Set<String> requestedScopes, String clientId,
 			Set<String> resourceIds, String grantType, String refreshToken) {
 
@@ -296,6 +303,9 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 			response.put(USER_NAME, username == null ? userId : username);
 			if (null != userEmail) {
 				response.put(EMAIL, userEmail);
+			}
+			if (null != tenantId) {
+				response.put(TID, tenantId);
 			}
 		}
 
@@ -332,7 +342,14 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 			clientScopes = client.getAuthorities();
 		}
 		else {
-			UaaUser user = userDatabase.retrieveUserByName(authentication.getName());
+			username = authentication.getName();
+			if ( authentication.getUserAuthentication().getDetails() instanceof UaaAuthenticationDetails &&
+					authentication.getUserAuthentication().getDetails() != null &&
+					((UaaAuthenticationDetails)authentication.getUserAuthentication().getDetails()).getTenantId() != null ) {
+				username = ((UaaAuthenticationDetails)authentication.getUserAuthentication().getDetails()).getTenantId() + "/" + username;
+			}
+
+			UaaUser user = userDatabase.retrieveUserByName(username);
 			userId = user.getId();
 			username = user.getUsername();
 			userEmail = user.getEmail();
@@ -356,7 +373,15 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
 		Integer validity = client.getAccessTokenValiditySeconds();
 
-		OAuth2AccessToken accessToken = createAccessToken(userId, username, userEmail,
+		String tenantId = null;
+		if ( authentication.getUserAuthentication() != null &&
+				authentication.getUserAuthentication().getDetails() instanceof UaaAuthenticationDetails &&
+				authentication.getUserAuthentication().getDetails() != null &&
+				((UaaAuthenticationDetails)authentication.getUserAuthentication().getDetails()).getTenantId() != null ) {
+			tenantId = ((UaaAuthenticationDetails)authentication.getUserAuthentication().getDetails()).getTenantId();
+		}
+
+		OAuth2AccessToken accessToken = createAccessToken(userId, username, tenantId, userEmail,
 				validity != null ? validity.intValue() : accessTokenValiditySeconds, clientScopes, modifiableUserScopes,
 				clientId, authentication.getAuthorizationRequest().getResourceIds(), grantType,
 				refreshToken != null ? refreshToken.getValue() : null, additionalAuthorizationAttributes);
@@ -410,6 +435,12 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 			username = ((Principal) authentication.getPrincipal()).getName();
 		} else if(authentication.getPrincipal() instanceof LdapUserDetails) {
 			username = ((LdapUserDetails) authentication.getPrincipal()).getUsername();
+		}
+
+		if ( authentication.getUserAuthentication().getDetails() instanceof UaaAuthenticationDetails &&
+				authentication.getUserAuthentication().getDetails() != null &&
+				((UaaAuthenticationDetails)authentication.getUserAuthentication().getDetails()).getTenantId() != null ) {
+			username = ((UaaAuthenticationDetails)authentication.getUserAuthentication().getDetails()).getTenantId() + "/" + username;
 		}
 
 		UaaUser user = userDatabase.retrieveUserByName(username);
@@ -517,7 +548,7 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 				scopes);
 
 		ArrayList<String> rids = (ArrayList<String>)claims.get(AUD);
-		Set<String> resourceIds =Collections.unmodifiableSet(new HashSet<String>(rids)); 
+		Set<String> resourceIds =Collections.unmodifiableSet(new HashSet<String>(rids));
 		((DefaultAuthorizationRequest) authorizationRequest).setResourceIds(resourceIds);
 
 		((DefaultAuthorizationRequest) authorizationRequest).setApproved(true);
@@ -540,7 +571,7 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 		// Is this a user token?
 		if (claims.containsKey(EMAIL)) {
 			UaaUser user = new UaaUser((String) claims.get(USER_ID), (String) claims.get(USER_NAME), null,
-					(String) claims.get(EMAIL), UaaAuthority.USER_AUTHORITIES, null, null, null, null);
+					(String)claims.get(TID), (String) claims.get(EMAIL), UaaAuthority.USER_AUTHORITIES, null, null, null, null);
 
 			UaaPrincipal principal = new UaaPrincipal(user);
 			userAuthentication = new UaaAuthentication(principal, UaaAuthority.USER_AUTHORITIES, null);
@@ -580,6 +611,11 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 		// Only check user access tokens
 		if (null != email) {
 			String username = (String) claims.get(USER_NAME);
+			String tenantId = (String) claims.get(TID);
+
+			if ( null != tenantId && !tenantId.isEmpty() ) {
+				username = tenantId + "/" + username;
+			}
 
 			UaaUser user = userDatabase.retrieveUserByName(username);
 
