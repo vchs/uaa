@@ -252,7 +252,8 @@
 	<beans profile="ldap">
        
         <bean id="userDatabase" class="org.cloudfoundry.identity.uaa.user.TenantAwareLdapUaaUserDatabase">
-           <constructor-arg ref="ldapTemplate" />
+           <constructor-arg index="0" ref="ldapTemplate" />
+           <constructor-arg index="1" value="${ldap.userSearchAttribute:userPrincipalName}" />
         </bean>
        
         <!-- <sec:authentication-manager alias="authzAuthenticationMgr">
@@ -274,7 +275,6 @@
         <bean id="userSearch"
             class="org.cloudfoundry.identity.uaa.authentication.ldap.TenantAwareFilterBasedLdapUserSearch">
             <constructor-arg index="0" value="(userPrincipalName={0})" />
-            <constructor-arg index="1" value="ou=tenants" />
             <constructor-arg index="2" ref="contextSource" />
        </bean>
         

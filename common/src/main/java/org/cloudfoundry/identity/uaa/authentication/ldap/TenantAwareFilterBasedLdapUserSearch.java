@@ -20,16 +20,13 @@ import org.springframework.security.ldap.search.LdapUserSearch;
  */
 public class TenantAwareFilterBasedLdapUserSearch implements LdapUserSearch {
 
-	private String dynamicSearchBase = "";
-
 	private final ContextSource contextSource;
 
 	private final String searchFilter;
 
 	public TenantAwareFilterBasedLdapUserSearch(String searchFilter,
-			String dynamicSearchBase, BaseLdapPathContextSource contextSource) {
+			BaseLdapPathContextSource contextSource) {
 		this.searchFilter = searchFilter;
-		this.dynamicSearchBase = dynamicSearchBase;
 		this.contextSource = contextSource;
 	}
 
@@ -37,7 +34,6 @@ public class TenantAwareFilterBasedLdapUserSearch implements LdapUserSearch {
 	public DirContextOperations searchForUser(String username) {
 		String[] tenantSlashUsername = username.split("/");
 
-		String tenantId = tenantSlashUsername[0];
 		String email = tenantSlashUsername[1];
 
 		return new FilterBasedLdapUserSearch("", searchFilter,

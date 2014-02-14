@@ -25,9 +25,11 @@ public class TenantAwareLdapUaaUserDatabase implements UaaUserDatabase {
 
 	private LdapTemplate ldapTemplate = null;
 	private String[] searchAttributes = {"objectguid","cn","mail","userPrincipalName","gn","sn","memberOf"};
+	private String userSearchAttribute = null;
 
-	public TenantAwareLdapUaaUserDatabase(LdapTemplate ldapTemplate) {
+	public TenantAwareLdapUaaUserDatabase(LdapTemplate ldapTemplate, String userSearchAttribute) {
 		this.ldapTemplate = ldapTemplate;
+		this.userSearchAttribute = userSearchAttribute;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -40,7 +42,7 @@ public class TenantAwareLdapUaaUserDatabase implements UaaUserDatabase {
 		String email = tenantSlashUsername[1];
 
 		AndFilter filter = new AndFilter();
-		filter.and(new EqualsFilter("userPrincipalName", email));
+		filter.and(new EqualsFilter(userSearchAttribute, email));
 
 		List<UaaUser> results = ldapTemplate.search(
 			     "", filter.encode(), SearchControls.SUBTREE_SCOPE,
