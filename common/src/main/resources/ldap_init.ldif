@@ -1,5 +1,38 @@
 version: 1
 
+dn: cn=peter,cn=users,dc=vsphere,dc=local
+objectClass: user
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: peter
+sAMAccountName: peter
+mail: peter@gmail.com
+userPrincipalName: peter@vsphere.local
+userpassword: password
+
+dn: cn=paul,cn=users,dc=vsphere,dc=local
+objectClass: user
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: paul
+sAMAccountName: paul
+mail: paul@gmail.com
+userPrincipalName: paul@vsphere.local
+userpassword: password
+
+dn: cn=mary,cn=users,dc=vsphere,dc=local
+objectClass: user
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: mary
+sAMAccountName: mary
+mail: mary@gmail.com
+userPrincipalName: mary@vsphere.local
+userpassword: password
+
 dn: ou=tenants,dc=vsphere,dc=local
 objectClass: organizationalUnit
 objectClass: top
@@ -10,88 +43,37 @@ objectClass: organization
 objectClass: top
 o: coke
 
-dn: cn=users,o=coke,ou=tenants,dc=vsphere,dc=local
-objectClass: container
-objectClass: top
-cn: coke.users
-
-dn: cn=mary,cn=users,o=coke,ou=tenants,dc=vsphere,dc=local
-objectClass: user
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: mary
-mail: mary@gmail.com
-userpassword: password
-
-
-dn: cn=joel,cn=users,o=coke,ou=tenants,dc=vsphere,dc=local
-mail: joel@gmail.com
-givenName: Joel
-sn: Dsa
-sAMAccountName: joel
-cn: joel
-objectClass: top
-objectClass: person
-objectClass: organizationalPerson
-objectClass: user
-userpassword: password
-
-
 dn: CN=coke.service_controller.admins,o=coke,ou=tenants,dc=vsphere,dc=local
 objectClass: group
 objectClass: top
 groupType: 2
 cn: coke.service_controller.admins
-member: cn=mary,cn=users,o=coke,ou=tenants,dc=vsphere,dc=local
+member: CN=mary,cn=Users,dc=vsphere,dc=local
 
 dn: CN=coke.service_controller.users,o=coke,ou=tenants,dc=vsphere,dc=local
 objectClass: group
 objectClass: top
 groupType: 2
 cn: coke.service_controller.users
-member: cn=mary,cn=users,o=coke,ou=tenants,dc=vsphere,dc=local
+member: CN=mary,cn=Users,dc=vsphere,dc=local
 
 dn: o=pepsi,ou=tenants,dc=vsphere,dc=local
 objectClass: container
 objectClass: top
 cn: pepsi
 
-dn: cn=users,o=pepsi,ou=tenants,dc=vsphere,dc=local
-objectClass: container
-objectClass: top
-cn: users
-
-dn: cn=paul,cn=users,o=pepsi,ou=tenants,dc=vsphere,dc=local
-objectClass: user
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: paul
-mail: paul@gmail.com
-userpassword: password
-
-dn: cn=peter,cn=users,o=pepsi,ou=tenants,dc=vsphere,dc=local
-objectClass: user
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: peter
-mail: peter@gmail.com
-userpassword: password
-
 dn: CN=pepsi.service_controller.admins,o=pepsi,ou=tenants,dc=vsphere,dc=local
 objectClass: group
 objectClass: top
 groupType: 2
 cn: pepsi.service_controller.admins
-member: cn=peter,cn=users,o=pepsi,ou=tenants,dc=vsphere,dc=local
+member: CN=peter,cn=Users,dc=vsphere,dc=local
 
 dn: CN=pepsi.service_controller.users,o=pepsi,ou=tenants,dc=vsphere,dc=local
 objectClass: group
 objectClass: top
 groupType: 2
 cn: pepsi.service_controller.users
-member: cn=peter,cn=users,o=pepsi,ou=tenants,dc=vsphere,dc=local
-member: cn=paul,cn=users,o=pepsi,ou=tenants,dc=vsphere,dc=local
+member: CN=paul,cn=Users,dc=vsphere,dc=local
+member: CN=peter,cn=Users,dc=vsphere,dc=local
 
