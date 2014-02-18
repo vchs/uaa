@@ -275,7 +275,7 @@
         <bean id="userSearch"
             class="org.cloudfoundry.identity.uaa.authentication.ldap.TenantAwareFilterBasedLdapUserSearch">
             <constructor-arg index="0" value="(userPrincipalName={0})" />
-            <constructor-arg index="2" ref="contextSource" />
+            <constructor-arg index="1" ref="contextSource" />
        </bean>
         
         <bean id="ldapAuthProvider" class="org.springframework.security.ldap.authentication.LdapAuthenticationProvider">
