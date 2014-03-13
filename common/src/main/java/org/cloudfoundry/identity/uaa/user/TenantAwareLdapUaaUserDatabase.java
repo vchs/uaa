@@ -1,5 +1,7 @@
 package org.cloudfoundry.identity.uaa.user;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -24,7 +26,7 @@ import org.springframework.util.StringUtils;
 public class TenantAwareLdapUaaUserDatabase implements UaaUserDatabase {
 
 	private LdapTemplate ldapTemplate = null;
-	private String[] searchAttributes = {"objectguid","cn","mail","userPrincipalName","gn","sn","memberOf"};
+	private String[] searchAttributes = {"objectguid","cn","mail","userPrincipalName","gn","sn","memberOf","modifytimestamp","createTimeStamp"};
 	private String userSearchAttribute = null;
 
 	public TenantAwareLdapUaaUserDatabase(LdapTemplate ldapTemplate, String userSearchAttribute) {
@@ -74,13 +76,21 @@ public class TenantAwareLdapUaaUserDatabase implements UaaUserDatabase {
 			String givenName = getAttributeValue(attrs, "gn");
 			String familyName = getAttributeValue(attrs, "sn");
 			List<String> groups = getAttributeValues(attrs, "memberOf");
+			Date createdDate = new Date();
+			Date updatedDate = new Date();
+			try {
+				createdDate = convertToDate(getAttributeValue(attrs, "createTimeStamp"));
+				updatedDate = convertToDate(getAttributeValue(attrs, "modifytimestamp"));
+			} catch (ParseException e) {
+				throw new NamingException(e.getMessage());
+			}
 
 			List<GrantedAuthority> authorities =
 					AuthorityUtils.commaSeparatedStringToAuthorityList(convertToScopes(tenantId, groups));
 
 			// TODO: Authorities needs to change to map the users group membership along with the default authorities
-			return new UaaUser(id, username, null, tenantId, email, authorities, givenName, familyName, new Date(),
-					new Date());
+			return new UaaUser(id, username, null, tenantId, email, authorities, givenName, familyName, createdDate,
+					updatedDate);
 		}
 
 		private String convertToScopes(String tenantId, List<String> groups) {
@@ -116,6 +126,18 @@ public class TenantAwareLdapUaaUserDatabase implements UaaUserDatabase {
 			scopeList.toArray(scopes);
 
 			return StringUtils.arrayToCommaDelimitedString(scopes);
+		}
+
+		private Date convertToDate(String dateTime) throws ParseException {
+			if (null == dateTime) {
+				throw new ParseException("Null date", 0);
+			}
+			String[] parts = dateTime.split("\\.");
+			String dateTimePart = parts[0];
+			String timeZonePart = "+0" + parts[1].substring(0, parts[1].length() - 1) + "00";
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssZ");
+			Date theDate = sdf.parse(dateTimePart + timeZonePart);
+			return theDate;
 		}
 
 		private String getAttributeValue(Attributes attrs, String attributeName) throws NamingException {

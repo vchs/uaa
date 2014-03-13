@@ -319,8 +319,11 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 			response.put(ISS, tokenEndpoint);
 		}
 
-		// TODO: different values for audience in the AT and RT. Need to sync them up
-		response.put(AUD, resourceIds);
+		Collection<String> audience = new ArrayList<String>();
+		audience.addAll(resourceIds);
+		audience.add(clientId);
+
+		response.put(AUD, audience);
 
 		return response;
 	}
@@ -488,9 +491,12 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 		}
 		if (!"client_credentials".equals(grantType)) {
 			response.put(USER_NAME, user.getUsername());
+			if (null != user.getTenantId()) {
+				response.put(TID, user.getTenantId());
+			}
 		}
 
-		response.put(AUD, scopes);
+		response.put(AUD, Collections.singletonList(clientId));
 
 		return response;
 	}
