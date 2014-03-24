@@ -465,6 +465,9 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 
 		Map<String, Object> response = new LinkedHashMap<String, Object>();
 
+    if (null != user.getTenantId()) {
+      response.put(TID, user.getTenantId());
+    }
 		response.put(JTI, UUID.randomUUID().toString());
 		response.put(SUB, user.getId());
 		response.put(SCOPE, scopes);
@@ -623,7 +626,7 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 			long accessTokenIssueDate = accessTokenIssuedAt.longValue() * 1000l;
 
 			// If the user changed their password, expire the access token
-			if (user.getModified().after(new Date(accessTokenIssueDate))) {
+			if (null == tenantId && user.getModified().after(new Date(accessTokenIssueDate))) {
 				logger.debug("User was last modified at " + user.getModified() + " access token was issued at "
 						+ new Date(accessTokenIssueDate));
 				throw new InvalidTokenException("Invalid access token (password changed): " + accessToken);
