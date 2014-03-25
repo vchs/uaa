@@ -120,7 +120,7 @@ public class UaaTokenServicesTests {
 		assertNull("user_id should be null for a client token", claims.get("user_name"));
 		assertEquals(claims.get("cid"), "client");
 		assertEquals(claims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients" }));
+		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients", "client" }));
 		assertTrue(((String) claims.get("jti")).length() > 0);
 		assertTrue(((Integer) claims.get("iat")) > 0);
 		assertTrue(((Integer) claims.get("exp")) > 0);
@@ -217,7 +217,7 @@ public class UaaTokenServicesTests {
 		assertEquals(claims.get("user_name"), "jdsa");
 		assertEquals(claims.get("cid"), "client");
 		assertEquals(claims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients" }));
+		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients", "client" }));
 		assertTrue(((String) claims.get("jti")).length() > 0);
 		assertTrue(((Integer) claims.get("iat")) > 0);
 		assertTrue(((Integer) claims.get("exp")) > 0);
@@ -278,7 +278,7 @@ public class UaaTokenServicesTests {
 		assertEquals(claims.get("user_name"), "jdsa");
 		assertEquals(claims.get("cid"), "client");
 		assertEquals(claims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients" }));
+		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients", "client" }));
 		assertTrue(((String) claims.get("jti")).length() > 0);
 		assertTrue(((Integer) claims.get("iat")) > 0);
 		assertTrue(((Integer) claims.get("exp")) > 0);
@@ -339,7 +339,7 @@ public class UaaTokenServicesTests {
 		assertEquals(claims.get("user_name"), "jdsa");
 		assertEquals(claims.get("cid"), "client");
 		assertEquals(claims.get("scope"), Arrays.asList(new String[] { "read" }));
-		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients" }));
+		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients", "client" }));
 		assertTrue(((String) claims.get("jti")).length() > 0);
 		assertTrue(((Integer) claims.get("iat")) > 0);
 		assertTrue(((Integer) claims.get("exp")) > 0);
@@ -407,7 +407,7 @@ public class UaaTokenServicesTests {
 		assertEquals(claims.get("user_name"), "jdsa");
 		assertEquals(claims.get("cid"), "client");
 		assertEquals(claims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients" }));
+		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients", "client" }));
 		assertTrue(((String) claims.get("jti")).length() > 0);
 		assertTrue(((Integer) claims.get("iat")) > 0);
 		assertTrue(((Integer) claims.get("exp")) > 0);
@@ -539,7 +539,7 @@ public class UaaTokenServicesTests {
 		assertEquals(claims.get("email"), "jdsa@vmware.com");
 		assertEquals(claims.get("cid"), "client");
 		assertEquals(claims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients" }));
+		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients", "client" }));
 		assertTrue(((String) claims.get("jti")).length() > 0);
 		assertTrue(((Integer) claims.get("iat")) > 0);
 		assertTrue(((Integer) claims.get("exp")) > 0);
@@ -568,7 +568,7 @@ public class UaaTokenServicesTests {
 			assertNotNull(refreshTokenClaims.get("sub"));
 			assertEquals(refreshTokenClaims.get("cid"), "client");
 			assertEquals(refreshTokenClaims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-			assertEquals(refreshTokenClaims.get("aud"), Arrays.asList(new String[] { "read", "write" }));
+			assertEquals(refreshTokenClaims.get("aud"), Arrays.asList(new String[] { "client" }));
 			assertTrue(((String) refreshTokenClaims.get("jti")).length() > 0);
 			assertTrue(((Integer) refreshTokenClaims.get("iat")) > 0);
 			assertTrue(((Integer) refreshTokenClaims.get("exp")) > 0);
@@ -632,7 +632,7 @@ public class UaaTokenServicesTests {
 		}
 
 		assertEquals(refreshTokenClaims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-		assertEquals(refreshTokenClaims.get("aud"), Arrays.asList(new String[] { "read", "write" }));
+		assertEquals(refreshTokenClaims.get("aud"), Arrays.asList(new String[] { "client" }));
 
 		// Second request with reduced scopes
 		DefaultAuthorizationRequest reducedScopeAuthorizationRequest = new DefaultAuthorizationRequest("client",
@@ -715,7 +715,7 @@ public class UaaTokenServicesTests {
 		}
 
 		assertEquals(refreshTokenClaims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-		assertEquals(refreshTokenClaims.get("aud"), Arrays.asList(new String[] { "read", "write" }));
+		assertEquals(refreshTokenClaims.get("aud"), Arrays.asList(new String[] { "client" }));
 
 		// Second request with expanded scopes
 		DefaultAuthorizationRequest expandedScopeAuthorizationRequest = new DefaultAuthorizationRequest("client",
