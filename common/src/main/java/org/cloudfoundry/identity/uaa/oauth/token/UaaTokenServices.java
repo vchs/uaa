@@ -321,8 +321,6 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 
 		Collection<String> audience = new ArrayList<String>();
 		audience.addAll(resourceIds);
-		audience.add(clientId);
-
 		response.put(AUD, audience);
 
 		return response;
@@ -496,9 +494,29 @@ public class UaaTokenServices implements AuthorizationServerTokenServices, Resou
 			}
 		}
 
-		response.put(AUD, Collections.singletonList(clientId));
+		response.put(AUD, extractAudience(scopes));
 
 		return response;
+	}
+
+
+
+	private String[] extractAudience(Set<String> scopes) {
+		List<String> audienceList = new ArrayList<String>();
+
+		for (String scope : scopes) {
+			String[] parts = scope.split("\\.");
+			if (null != parts) {
+				if (parts.length <= 2) {
+					audienceList.add(parts[0]);
+				} else {
+					audienceList.add(parts[1]);	//Tenant id is first
+				}
+			}
+		}
+		String[] returnValue = new String[audienceList.size()];
+		audienceList.toArray(returnValue);
+		return returnValue;
 	}
 
 	/**

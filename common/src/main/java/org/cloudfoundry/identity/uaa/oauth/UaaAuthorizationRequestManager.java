@@ -277,8 +277,14 @@ public class UaaAuthorizationRequestManager implements AuthorizationRequestManag
 				resourceIds.add(scopeToResource.get(scope));
 			}
 			else if (scope.contains(scopeSeparator) && !scope.endsWith(scopeSeparator) && !scope.equals("uaa.none")) {
-				String id = scope.substring(0, scope.lastIndexOf(scopeSeparator));
-				resourceIds.add(id);
+				String[] parts = scope.split("\\" + scopeSeparator);
+				if (null != parts) {
+					if (parts.length == 2) {
+						resourceIds.add(parts[0]);
+					} else {
+						resourceIds.add(parts[1]);	//Tenant id is first
+					}
+				}
 			}
 		}
 		return resourceIds.isEmpty() ? clientDetails.getResourceIds() : resourceIds;

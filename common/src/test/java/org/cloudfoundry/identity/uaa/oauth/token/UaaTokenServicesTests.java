@@ -93,7 +93,7 @@ public class UaaTokenServicesTests {
 
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "client_credentials");
@@ -120,7 +120,7 @@ public class UaaTokenServicesTests {
 		assertNull("user_id should be null for a client token", claims.get("user_name"));
 		assertEquals(claims.get("cid"), "client");
 		assertEquals(claims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients", "client" }));
+		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "client", "clients" }));
 		assertTrue(((String) claims.get("jti")).length() > 0);
 		assertTrue(((Integer) claims.get("iat")) > 0);
 		assertTrue(((Integer) claims.get("exp")) > 0);
@@ -132,7 +132,7 @@ public class UaaTokenServicesTests {
 	public void testCreateAccessTokenAuthcodeGrant() {
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -148,7 +148,7 @@ public class UaaTokenServicesTests {
 	public void testCreateAccessTokenPasswordGrant() {
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "password");
@@ -175,7 +175,7 @@ public class UaaTokenServicesTests {
 
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -189,7 +189,7 @@ public class UaaTokenServicesTests {
 		DefaultAuthorizationRequest refreshAuthorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
 		refreshAuthorizationRequest.setResourceIds(new HashSet<String>(Arrays
-				.asList(new String[] { "scim", "clients" })));
+				.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> refreshAzParameters = new HashMap<String, String>(
 				refreshAuthorizationRequest.getAuthorizationParameters());
 		refreshAzParameters.put("grant_type", "refresh_token");
@@ -217,7 +217,7 @@ public class UaaTokenServicesTests {
 		assertEquals(claims.get("user_name"), "jdsa");
 		assertEquals(claims.get("cid"), "client");
 		assertEquals(claims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients", "client" }));
+		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "client", "clients" }));
 		assertTrue(((String) claims.get("jti")).length() > 0);
 		assertTrue(((Integer) claims.get("iat")) > 0);
 		assertTrue(((Integer) claims.get("exp")) > 0);
@@ -236,7 +236,7 @@ public class UaaTokenServicesTests {
 
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -250,7 +250,7 @@ public class UaaTokenServicesTests {
 		DefaultAuthorizationRequest refreshAuthorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
 		refreshAuthorizationRequest.setResourceIds(new HashSet<String>(Arrays
-				.asList(new String[] { "scim", "clients" })));
+				.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> refreshAzParameters = new HashMap<String, String>(
 				refreshAuthorizationRequest.getAuthorizationParameters());
 		refreshAzParameters.put("grant_type", "refresh_token");
@@ -278,7 +278,7 @@ public class UaaTokenServicesTests {
 		assertEquals(claims.get("user_name"), "jdsa");
 		assertEquals(claims.get("cid"), "client");
 		assertEquals(claims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients", "client" }));
+		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "client", "clients" }));
 		assertTrue(((String) claims.get("jti")).length() > 0);
 		assertTrue(((Integer) claims.get("iat")) > 0);
 		assertTrue(((Integer) claims.get("exp")) > 0);
@@ -297,7 +297,7 @@ public class UaaTokenServicesTests {
 
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -311,7 +311,7 @@ public class UaaTokenServicesTests {
 		DefaultAuthorizationRequest refreshAuthorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read" }));
 		refreshAuthorizationRequest.setResourceIds(new HashSet<String>(Arrays
-				.asList(new String[] { "scim", "clients" })));
+				.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> refreshAzParameters = new HashMap<String, String>(
 				refreshAuthorizationRequest.getAuthorizationParameters());
 		refreshAzParameters.put("grant_type", "refresh_token");
@@ -339,7 +339,7 @@ public class UaaTokenServicesTests {
 		assertEquals(claims.get("user_name"), "jdsa");
 		assertEquals(claims.get("cid"), "client");
 		assertEquals(claims.get("scope"), Arrays.asList(new String[] { "read" }));
-		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients", "client" }));
+		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "client", "clients" }));
 		assertTrue(((String) claims.get("jti")).length() > 0);
 		assertTrue(((Integer) claims.get("iat")) > 0);
 		assertTrue(((Integer) claims.get("exp")) > 0);
@@ -365,7 +365,7 @@ public class UaaTokenServicesTests {
 
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -379,7 +379,7 @@ public class UaaTokenServicesTests {
 		DefaultAuthorizationRequest refreshAuthorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
 		refreshAuthorizationRequest.setResourceIds(new HashSet<String>(Arrays
-				.asList(new String[] { "scim", "clients" })));
+				.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> refreshAzParameters = new HashMap<String, String>(
 				refreshAuthorizationRequest.getAuthorizationParameters());
 		refreshAzParameters.put("grant_type", "refresh_token");
@@ -407,7 +407,7 @@ public class UaaTokenServicesTests {
 		assertEquals(claims.get("user_name"), "jdsa");
 		assertEquals(claims.get("cid"), "client");
 		assertEquals(claims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients", "client" }));
+		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "client", "clients" }));
 		assertTrue(((String) claims.get("jti")).length() > 0);
 		assertTrue(((Integer) claims.get("iat")) > 0);
 		assertTrue(((Integer) claims.get("exp")) > 0);
@@ -433,7 +433,7 @@ public class UaaTokenServicesTests {
 
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -447,7 +447,7 @@ public class UaaTokenServicesTests {
 		DefaultAuthorizationRequest refreshAuthorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
 		refreshAuthorizationRequest.setResourceIds(new HashSet<String>(Arrays
-				.asList(new String[] { "scim", "clients" })));
+				.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> refreshAzParameters = new HashMap<String, String>(
 				refreshAuthorizationRequest.getAuthorizationParameters());
 		refreshAzParameters.put("grant_type", "refresh_token");
@@ -477,7 +477,7 @@ public class UaaTokenServicesTests {
 
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -491,7 +491,7 @@ public class UaaTokenServicesTests {
 		DefaultAuthorizationRequest refreshAuthorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
 		refreshAuthorizationRequest.setResourceIds(new HashSet<String>(Arrays
-				.asList(new String[] { "scim", "clients" })));
+				.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> refreshAzParameters = new HashMap<String, String>(
 				refreshAuthorizationRequest.getAuthorizationParameters());
 		refreshAzParameters.put("grant_type", "refresh_token");
@@ -506,7 +506,7 @@ public class UaaTokenServicesTests {
 	public void testCreateAccessTokenImplicitGrant() {
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "implicit");
@@ -539,7 +539,7 @@ public class UaaTokenServicesTests {
 		assertEquals(claims.get("email"), "jdsa@vmware.com");
 		assertEquals(claims.get("cid"), "client");
 		assertEquals(claims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "clients", "client" }));
+		assertEquals(claims.get("aud"), Arrays.asList(new String[] { "scim", "client", "clients" }));
 		assertTrue(((String) claims.get("jti")).length() > 0);
 		assertTrue(((Integer) claims.get("iat")) > 0);
 		assertTrue(((Integer) claims.get("exp")) > 0);
@@ -568,7 +568,7 @@ public class UaaTokenServicesTests {
 			assertNotNull(refreshTokenClaims.get("sub"));
 			assertEquals(refreshTokenClaims.get("cid"), "client");
 			assertEquals(refreshTokenClaims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-			assertEquals(refreshTokenClaims.get("aud"), Arrays.asList(new String[] { "client" }));
+			assertEquals(refreshTokenClaims.get("aud"), Arrays.asList(new String[] { "read", "write" }));
 			assertTrue(((String) refreshTokenClaims.get("jti")).length() > 0);
 			assertTrue(((Integer) refreshTokenClaims.get("iat")) > 0);
 			assertTrue(((Integer) refreshTokenClaims.get("exp")) > 0);
@@ -594,7 +594,7 @@ public class UaaTokenServicesTests {
 		// First Request
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -632,7 +632,7 @@ public class UaaTokenServicesTests {
 		}
 
 		assertEquals(refreshTokenClaims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-		assertEquals(refreshTokenClaims.get("aud"), Arrays.asList(new String[] { "client" }));
+		assertEquals(refreshTokenClaims.get("aud"), Arrays.asList(new String[] { "read", "write" }));
 
 		// Second request with reduced scopes
 		DefaultAuthorizationRequest reducedScopeAuthorizationRequest = new DefaultAuthorizationRequest("client",
@@ -677,7 +677,7 @@ public class UaaTokenServicesTests {
 		// First Request
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -715,7 +715,7 @@ public class UaaTokenServicesTests {
 		}
 
 		assertEquals(refreshTokenClaims.get("scope"), Arrays.asList(new String[] { "read", "write" }));
-		assertEquals(refreshTokenClaims.get("aud"), Arrays.asList(new String[] { "client" }));
+		assertEquals(refreshTokenClaims.get("aud"), Arrays.asList(new String[] { "read", "write" }));
 
 		// Second request with expanded scopes
 		DefaultAuthorizationRequest expandedScopeAuthorizationRequest = new DefaultAuthorizationRequest("client",
@@ -743,7 +743,7 @@ public class UaaTokenServicesTests {
 
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -798,7 +798,7 @@ public class UaaTokenServicesTests {
 				new Date()));
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -816,7 +816,7 @@ public class UaaTokenServicesTests {
 		DefaultAuthorizationRequest refreshAuthorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
 		refreshAuthorizationRequest.setResourceIds(new HashSet<String>(Arrays
-				.asList(new String[] { "scim", "clients" })));
+				.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> refreshAzParameters = new HashMap<String, String>(
 				refreshAuthorizationRequest.getAuthorizationParameters());
 		refreshAzParameters.put("grant_type", "refresh_token");
@@ -843,7 +843,7 @@ public class UaaTokenServicesTests {
 
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -857,7 +857,7 @@ public class UaaTokenServicesTests {
 		DefaultAuthorizationRequest refreshAuthorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
 		refreshAuthorizationRequest.setResourceIds(new HashSet<String>(Arrays
-				.asList(new String[] { "scim", "clients" })));
+				.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> refreshAzParameters = new HashMap<String, String>(
 				refreshAuthorizationRequest.getAuthorizationParameters());
 		refreshAzParameters.put("grant_type", "refresh_token");
@@ -870,7 +870,7 @@ public class UaaTokenServicesTests {
 	public void testRefreshTokenAfterApprovalsChanged() {
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -892,7 +892,7 @@ public class UaaTokenServicesTests {
 		DefaultAuthorizationRequest refreshAuthorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
 		refreshAuthorizationRequest.setResourceIds(new HashSet<String>(Arrays
-				.asList(new String[] { "scim", "clients" })));
+				.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> refreshAzParameters = new HashMap<String, String>(
 				refreshAuthorizationRequest.getAuthorizationParameters());
 		refreshAzParameters.put("grant_type", "refresh_token");
@@ -913,7 +913,7 @@ public class UaaTokenServicesTests {
 
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -927,7 +927,7 @@ public class UaaTokenServicesTests {
 		DefaultAuthorizationRequest refreshAuthorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
 		refreshAuthorizationRequest.setResourceIds(new HashSet<String>(Arrays
-				.asList(new String[] { "scim", "clients" })));
+				.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> refreshAzParameters = new HashMap<String, String>(
 				refreshAuthorizationRequest.getAuthorizationParameters());
 		refreshAzParameters.put("grant_type", "refresh_token");
@@ -948,7 +948,7 @@ public class UaaTokenServicesTests {
 
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -962,7 +962,7 @@ public class UaaTokenServicesTests {
 		DefaultAuthorizationRequest refreshAuthorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
 		refreshAuthorizationRequest.setResourceIds(new HashSet<String>(Arrays
-				.asList(new String[] { "scim", "clients" })));
+				.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> refreshAzParameters = new HashMap<String, String>(
 				refreshAuthorizationRequest.getAuthorizationParameters());
 		refreshAzParameters.put("grant_type", "refresh_token");
@@ -981,7 +981,7 @@ public class UaaTokenServicesTests {
 
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -995,7 +995,7 @@ public class UaaTokenServicesTests {
 		DefaultAuthorizationRequest refreshAuthorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
 		refreshAuthorizationRequest.setResourceIds(new HashSet<String>(Arrays
-				.asList(new String[] { "scim", "clients" })));
+				.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> refreshAzParameters = new HashMap<String, String>(
 				refreshAuthorizationRequest.getAuthorizationParameters());
 		refreshAzParameters.put("grant_type", "refresh_token");
@@ -1008,7 +1008,7 @@ public class UaaTokenServicesTests {
 	public void testRefreshTokenAfterApprovalsMissing2() {
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -1022,7 +1022,7 @@ public class UaaTokenServicesTests {
 		DefaultAuthorizationRequest refreshAuthorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
 		refreshAuthorizationRequest.setResourceIds(new HashSet<String>(Arrays
-				.asList(new String[] { "scim", "clients" })));
+				.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> refreshAzParameters = new HashMap<String, String>(
 				refreshAuthorizationRequest.getAuthorizationParameters());
 		refreshAzParameters.put("grant_type", "refresh_token");
@@ -1035,7 +1035,7 @@ public class UaaTokenServicesTests {
 	public void testReadAccessToken() {
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -1062,7 +1062,7 @@ public class UaaTokenServicesTests {
 	public void testLoadAuthenticationForAUser() {
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -1091,7 +1091,7 @@ public class UaaTokenServicesTests {
 	public void testLoadAuthenticationForAClient() {
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "client_credentials");
@@ -1121,7 +1121,7 @@ public class UaaTokenServicesTests {
 
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
@@ -1139,7 +1139,7 @@ public class UaaTokenServicesTests {
 	public void testCreateAccessTokenAuthcodeGrantAdditionalAuthorizationAttributes() {
 		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest("client",
 				Arrays.asList(new String[] { "read", "write" }));
-		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "clients" })));
+		authorizationRequest.setResourceIds(new HashSet<String>(Arrays.asList(new String[] { "scim", "client", "clients" })));
 		Map<String, String> azParameters = new HashMap<String, String>(
 				authorizationRequest.getAuthorizationParameters());
 		azParameters.put("grant_type", "authorization_code");
